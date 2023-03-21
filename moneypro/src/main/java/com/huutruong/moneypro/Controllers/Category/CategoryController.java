@@ -48,8 +48,8 @@ public class CategoryController {
         return categoryRepository.findById(id)
                 .map(category -> {
                     category.setDescription(categoryModel.getDescription());
-                    category.setName(category.getName());
-                    category.setColor(category.getColor());
+                    category.setName(categoryModel.getName());
+                    category.setColor(categoryModel.getColor());
                     category.setUpdated_at(GenerateTime.getCurentTimeStamp());
                     return categoryRepository.save(category);
                 }).orElseGet(() -> {

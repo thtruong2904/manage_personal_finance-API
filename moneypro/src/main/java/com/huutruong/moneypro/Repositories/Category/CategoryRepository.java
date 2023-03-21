@@ -10,4 +10,5 @@ import com.huutruong.moneypro.Models.Category.CategoryModel;
 @Repository
 public interface CategoryRepository extends JpaRepository<CategoryModel, Long> {
     List<CategoryModel> findByUserId(Long userId);
+
 }
