@@ -32,9 +32,11 @@ public class CategoryModel {
 
     @Column(name = "type") // loai = 1: thu, loai = 2: chi
     private Long type;
+
     @Column(name = "created_at")
     @JsonIgnore
     private String created_at;
+
     @Column(name = "updated_at")
     @JsonIgnore
     private String updated_at;

@@ -190,6 +190,7 @@ public class TransactionService implements TransactionInterface {
     @Override
     public ApiResponse<Object> getAllTransactionInDayCurrent(String username){
         Date current = new Date(System.currentTimeMillis());
+        System.out.println(current);
         List<TransactionModel> list = transactionRepository.findAllByDateAndUsername(username, current);
         if(list.size() == 0)
         {

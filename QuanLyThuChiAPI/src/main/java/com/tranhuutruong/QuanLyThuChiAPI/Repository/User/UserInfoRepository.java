@@ -19,6 +19,5 @@ public interface UserInfoRepository extends JpaRepository<UserInfoModel, Long> {
 
     @Query("SELECT u FROM UserInfoModel u WHERE u.accountModel.username = :username")
     UserInfoModel findUserInfoModelByAccountModel_Username(@Param("username") String username);
-    Iterable<UserInfoModel> findAllByAccountModel_IsActivityAndAccountModel_RoleModel_Name(boolean isActivity, String roleName);
-
+    Iterable<UserInfoModel> findAllByAccountModel_RoleModel_Name(String roleName);
 }

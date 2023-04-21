@@ -14,7 +14,7 @@ public interface UserInterface {
 
     public LoginResponse login(LoginRequest loginRequest);
 
-    public Iterable<UserInfoModel>getAllUser();
+    public ApiResponse<Object> getAllUser();
 
     public LoginResponse refreshToken(String refreshToken);
     public PasswordResponse resetPassword(ResetPasswordRequest resetPasswordRequest);
@@ -22,6 +22,7 @@ public interface UserInterface {
     public PasswordResponse forgotPass(ForgotPasswordRequest forgotPasswordRequest);
 
     public ApiResponse<Object> deleteAccountUser(Long id);
+    public ApiResponse<Object> openAccountUser(Long id);
 
     public ApiResponse<Object> updateProfile(String username, UpdateProfileRequest updateProfileRequest);
 }

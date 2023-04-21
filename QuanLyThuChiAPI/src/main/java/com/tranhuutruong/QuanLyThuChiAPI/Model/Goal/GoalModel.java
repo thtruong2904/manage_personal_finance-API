@@ -1,7 +1,6 @@
 package com.tranhuutruong.QuanLyThuChiAPI.Model.Goal;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.google.api.client.util.DateTime;
 import com.tranhuutruong.QuanLyThuChiAPI.Model.User.UserInfoModel;
 import lombok.*;
 

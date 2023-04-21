@@ -42,6 +42,11 @@ public class CategoryService implements CategoryInterface {
         if (!userInfoModel.isPresent()) {
             return ApiResponse.builder().message("User không tồn tại!").status(200).build();
         }
+        CategoryModel category = categoryRepository.findCategoryModelByNameAndType(categoryRequest.getName(), categoryRequest.getType());
+        if(category != null)
+        {
+            return ApiResponse.builder().message("Đã tồn tại danh mục với thể loại chi tiêu").status(101).build();
+        }
         CategoryModel categoryModel = CategoryModel.builder().userInfoModel(userInfoModel.get()).description(categoryRequest.getDescription())
                         .name(categoryRequest.getName())
                         .color(categoryRequest.getColor())
@@ -49,12 +54,17 @@ public class CategoryService implements CategoryInterface {
                         .created_at(CurrentDateTime.getCurrentDateTime())
                         .updated_at(CurrentDateTime.getCurrentDateTime()).build();
         categoryRepository.save(categoryModel);
-        return ApiResponse.builder().status(200).message("Tạo danh mục chi tiêu thành công!").build();
+        return ApiResponse.builder().status(200).message("Tạo danh mục chi tiêu thành công!").data(categoryModel).build();
     }
 
     @Override
     public ApiResponse<Object> updateCategory(String username, CategoryRequest categoryRequest, Long idCategory)
     {
+        CategoryModel category = categoryRepository.findCategoryModelByNameAndType(categoryRequest.getName(), categoryRequest.getType());
+        if(category != null)
+        {
+            return ApiResponse.builder().message("Đã tồn tại danh mục với thể loại chi tiêu").status(101).build();
+        }
         CategoryModel categoryModel = categoryRepository.findCategoryModelByUserInfoModel_AccountModel_UsernameAndId(username, idCategory);
         if(categoryModel == null || categoryModel.getId() <= 0)
         {
@@ -93,7 +103,7 @@ public class CategoryService implements CategoryInterface {
             return ApiResponse.builder().message("Không thể xóa danh mục vì có giao dịch liên quan!").status(101).build();
         }
         categoryRepository.delete(categoryModel);
-        return ApiResponse.builder().status(200).message("Xóa danh mục thành công").data(Mono.just(categoryModel)).build();
+        return ApiResponse.builder().status(200).message("Xóa danh mục thành công").build();
     }
 
     //lấy thông tin chi tiết về một danh mục của user

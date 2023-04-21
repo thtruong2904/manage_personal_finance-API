@@ -3,6 +3,8 @@ package com.tranhuutruong.QuanLyThuChiAPI.Request.Goal;
 import lombok.Builder;
 import lombok.Data;
 
+import java.sql.Date;
+
 @Data
 @Builder
 public class GoalRequest {
@@ -12,7 +14,5 @@ public class GoalRequest {
 
     private Long amount;
 
-    private Long deposit;
-
-    private String deadline;
+    private Date deadline;
 }

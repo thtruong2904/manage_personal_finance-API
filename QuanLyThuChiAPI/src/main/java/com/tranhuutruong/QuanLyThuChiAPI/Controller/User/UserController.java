@@ -22,7 +22,7 @@ public class UserController {
     private UserService userService;
 
     @GetMapping(value = "/getAll")
-    public Iterable<UserInfoModel>getUsers()
+    public ApiResponse<Object> getUsers()
     {
         return userService.getAllUser();
     }
@@ -39,9 +39,15 @@ public class UserController {
         return userService.updateProfile(principal.getName(), updateProfileRequest);
     }
 
-    @DeleteMapping(value = "/delete/{id}")
+    @PutMapping(value = "/delete/{id}")
     public ApiResponse<Object> blockAccount(@PathVariable("id") Long id)
     {
         return userService.deleteAccountUser(id);
+    }
+
+    @PutMapping(value = "/open/{id}")
+    public ApiResponse<Object> openAccount(@PathVariable("id") Long id)
+    {
+        return userService.openAccountUser(id);
     }
 }

@@ -16,6 +16,7 @@ import com.tranhuutruong.QuanLyThuChiAPI.Utils.FormatDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -68,9 +69,8 @@ public class GoalService implements GoalInterface {
         {
             return ApiResponse.builder().message("Số tiền bắt đầu mục tiêu không thể lớn hơn hoặc bằng số tiền mục tiêu!").status(101).build();
         }
-        LocalDate deadline = FormatDate.formatDateMySql(goalRequest.getDeadline()).toLocalDate();
-        LocalDate currentDate = LocalDate.now();
-        if(currentDate.isAfter(deadline))
+        Date currentDate = new Date(System.currentTimeMillis());
+        if(currentDate.after(goalRequest.getDeadline()))
         {
             return ApiResponse.builder().message("Ngày mục tiêu phải lớn hơn ngày hiện tại!").status(101).build();
         }
@@ -78,11 +78,11 @@ public class GoalService implements GoalInterface {
                 .name(goalRequest.getName())
                 .balance(goalRequest.getBalance())
                 .amount(goalRequest.getAmount())
-                .deposit(goalRequest.getDeposit())
-                .deadline(FormatDate.formatDateMySql(goalRequest.getDeadline()))
+                .deposit(0L)
+                .deadline(goalRequest.getDeadline())
                 .status(1L).build();
         goalRepository.save(goalModel);
-        return ApiResponse.builder().message("Thêm mục tiêu thành công!").status(200).build();
+        return ApiResponse.builder().message("Thêm mục tiêu thành công!").status(200).data(goalModel).build();
     }
 
     @Override
@@ -128,10 +128,8 @@ public class GoalService implements GoalInterface {
         }
 
         goalModel.setDeposit(depositRequest.getDeposit()+goalModel.getDeposit());
-        goalModel.setBalance(goalModel.getBalance() + depositRequest.getDeposit());
 
         goalRepository.save(goalModel);
         return ApiResponse.builder().message("Thêm tiền cho mục tiêu thành công!").status(200).build();
     }
-
 }

@@ -23,7 +23,7 @@ public class GoalCheck {
     @Autowired
     NotificationRepository notificationRepository;
 
-    @Scheduled(cron = "*/3 * * * * *")
+    @Scheduled(cron = "*/10 * * * * *")
     public void checkGoalDeadline()
     {
         LocalDate currentDate = LocalDate.now();

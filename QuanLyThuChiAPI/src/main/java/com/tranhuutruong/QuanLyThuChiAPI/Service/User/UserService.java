@@ -71,7 +71,6 @@ public class UserService implements UserInterface{
     @Value("${jwkFile}")
     private Resource jwkFile;
 
-
     @Transactional
     @Override
     public UserResponse registerUser(UserRequest userRequest)
@@ -161,22 +160,37 @@ public class UserService implements UserInterface{
                 .roleModel(userInfoModel.getAccountModel().getRoleModel())
                 .build();
     }
-
     @Override
-    public Iterable<UserInfoModel>getAllUser()
+    public ApiResponse<Object> getAllUser()
     {
-        return userInfoRepository.findAllByAccountModel_IsActivityAndAccountModel_RoleModel_Name(true, "USER");
+        Iterable<UserInfoModel> listUser = userInfoRepository.findAllByAccountModel_RoleModel_Name("USER");
+        return ApiResponse.builder().message("Danh sách người dùng").status(200).data(listUser).build();
     }
-
     @Override
     public ApiResponse<Object> deleteAccountUser(Long id)
     {
         AccountModel accountModel = accountRepository.findAccountModelById(id);
+        if(accountModel.isActivity() == false)
+        {
+            return ApiResponse.builder().message("Tài khoản hiện đang bị khóa").status(101).build();
+        }
         accountModel.setActivity(false);
         accountRepository.save(accountModel);
         return ApiResponse.builder().status(200).message("Tài khoản đã bị vô hiệu hóa!").data(accountModel).build();
     }
 
+    @Override
+    public ApiResponse<Object> openAccountUser(Long id)
+    {
+        AccountModel accountModel = accountRepository.findAccountModelById(id);
+        if(accountModel.isActivity() == true)
+        {
+            return ApiResponse.builder().message("Tài khoản đã đang hoạt động").status(101).build();
+        }
+        accountModel.setActivity(true);
+        accountRepository.save(accountModel);
+        return ApiResponse.builder().status(200).message("Mở khóa tài khoản thành công").data(accountModel).build();
+    }
     @Override
     public ApiResponse<Object> updateProfile(String username, UpdateProfileRequest updateProfileRequest)
     {

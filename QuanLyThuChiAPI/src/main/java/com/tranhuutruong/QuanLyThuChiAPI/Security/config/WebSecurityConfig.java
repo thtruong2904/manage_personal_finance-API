@@ -62,9 +62,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception{
         httpSecurity.cors().configurationSource(corsConfigurationSource()).and().csrf().disable()
-                .authorizeRequests().antMatchers("/api/auth/**").permitAll()
-                .antMatchers("/api/card/**", "/api/category/**", "/api/transaction/**", "/api/goal/**", "/api/notification/**", "/api/user/profile").hasAuthority("USER")
-                .antMatchers("/api/user/getAll", "/api/user/delete").hasAuthority("ADMIN")
+                .authorizeRequests().antMatchers("/api/auth/**", "/api/user/profile").permitAll()
+                .antMatchers("/api/card/**", "/api/category/**", "/api/transaction/**", "/api/goal/**", "/api/notification/**").hasAuthority("USER")
+                .antMatchers("/api/user/getAll", "/api/user/delete/**", "/api/user/open/**").hasAuthority("ADMIN")
                 .anyRequest().authenticated()
                 .and().exceptionHandling()
                 .authenticationEntryPoint(jwtEntryPoint)
