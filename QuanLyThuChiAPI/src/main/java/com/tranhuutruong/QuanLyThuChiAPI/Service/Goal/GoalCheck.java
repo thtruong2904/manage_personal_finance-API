@@ -35,10 +35,11 @@ public class GoalCheck {
                 LocalDate deadline = goalModel.getDeadline().toLocalDate();
                 Long balance = goalModel.getBalance();
                 Long amount = goalModel.getAmount();
+                Long deposit = goalModel.getDeposit();
 
                 if(currentDate.isAfter(deadline))
                 {
-                    if(balance < amount)
+                    if((balance+deposit) < amount)
                     {
                         NotificationModel noti = notificationRepository.findByContentAndTitle("Mục tiêu " + goalModel.getName() + " đã hết hạn", "Mục tiêu đã hết hạn");
                         if(noti == null) {
@@ -57,7 +58,7 @@ public class GoalCheck {
                     }
                 }else if(currentDate.equals(deadline))
                 {
-                    if(balance >= amount)
+                    if((balance+deposit) >= amount)
                     {
                         NotificationModel noti = notificationRepository.findByContentAndTitle("Bạn đã hoàn thành mục tiêu " + goalModel.getName(), "Mục tiêu đã hoàn thành");
                         if(noti == null) {
@@ -80,7 +81,7 @@ public class GoalCheck {
                     Long daysBetween = ChronoUnit.DAYS.between(currentDate, deadline);
                     if(daysBetween == 3)
                     {
-                        if(balance < amount)
+                        if((balance+deposit) < amount)
                         {
                             NotificationModel noti = notificationRepository.findByContentAndTitle("Mục tiêu " + goalModel.getName() + " của bạn sắp hết hạn. Hãy thêm tiền cho mục tiêu để hoàn thành nhé", "Mục tiêu sắp hết hạn");
                             if(noti == null){
@@ -93,10 +94,12 @@ public class GoalCheck {
                             notificationModel.setCreated_at(current);
                             notificationRepository.save(notificationModel);
 
+                            goalModel.setStatus(1L);
+                            goalRepository.save(goalModel);
                             }
                         }
                     }
-                    if(balance >= amount)
+                    if((balance+deposit) >= amount)
                     {
                         NotificationModel noti = notificationRepository.findByContentAndTitle("Bạn đã hoàn thành mục tiêu " + goalModel.getName(), "Mục tiêu đã hoàn thành");
                         NotificationModel notificationModel = new NotificationModel();

@@ -60,11 +60,6 @@ public class CategoryService implements CategoryInterface {
     @Override
     public ApiResponse<Object> updateCategory(String username, CategoryRequest categoryRequest, Long idCategory)
     {
-        CategoryModel category = categoryRepository.findCategoryModelByNameAndType(categoryRequest.getName(), categoryRequest.getType());
-        if(category != null)
-        {
-            return ApiResponse.builder().message("Đã tồn tại danh mục với thể loại chi tiêu").status(101).build();
-        }
         CategoryModel categoryModel = categoryRepository.findCategoryModelByUserInfoModel_AccountModel_UsernameAndId(username, idCategory);
         if(categoryModel == null || categoryModel.getId() <= 0)
         {

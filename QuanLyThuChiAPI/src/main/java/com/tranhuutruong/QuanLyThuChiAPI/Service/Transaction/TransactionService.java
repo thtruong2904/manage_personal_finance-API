@@ -65,6 +65,12 @@ public class TransactionService implements TransactionInterface {
     }
 
     @Override
+    public ApiResponse<Object> getAll(String username)
+    {
+        List<TransactionModel> list = transactionRepository.findAllByUsername(username);
+        return ApiResponse.builder().message("Danh sách giao dịch").status(200).data(list).build();
+    }
+    @Override
     public ApiResponse<Object> addTransaction(String username, Long idCategory,Long idCard, TransactionRequest transactionRequest) throws ParseException {
         AccountModel accountModel = accountRepository.findAccountModelByUsername(username);
         if(accountModel == null || accountModel.getId() <= 0)

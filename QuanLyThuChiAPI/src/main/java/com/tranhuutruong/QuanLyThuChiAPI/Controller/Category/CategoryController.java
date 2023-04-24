@@ -61,7 +61,6 @@ public class CategoryController {
     @GetMapping(value = "/expense")
     public Mono<List<CategoryModel>> expenseCategory(Principal principal)
     {
-
         return Mono.just(categoryService.expenseCategory(principal.getName()));
     }
 

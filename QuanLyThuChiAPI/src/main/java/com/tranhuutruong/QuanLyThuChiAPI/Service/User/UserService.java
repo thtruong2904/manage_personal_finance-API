@@ -285,7 +285,6 @@ public class UserService implements UserInterface{
                 forgotPasswordRepository.save(forgotPassword);
                 result = true;
                 message = "Bạn có thể sử dụng mật khẩu mới để đăng nhập vào ệ thống!";
-
             }
             else {
                 message = "Không thể tìm thấy tài khoản với email của bạn!";

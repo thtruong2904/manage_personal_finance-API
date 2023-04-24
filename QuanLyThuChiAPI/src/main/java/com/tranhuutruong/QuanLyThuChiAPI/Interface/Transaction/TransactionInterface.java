@@ -11,6 +11,8 @@ import java.util.List;
 
 public interface TransactionInterface {
 
+    // lấy tất cả giao dịch
+    public ApiResponse<Object> getAll(String username);
     // theo ngày
     public ApiResponse<Object> getAllTransactionInDayCurrent(String username);
     public ApiResponse<Object> getTotalIncomeToday(String username);

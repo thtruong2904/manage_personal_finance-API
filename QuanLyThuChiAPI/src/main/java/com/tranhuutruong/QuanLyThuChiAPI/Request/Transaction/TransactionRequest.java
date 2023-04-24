@@ -13,7 +13,9 @@ public class TransactionRequest {
     private String location;
 
     private Long type;
+
     private String transactiondate;
+
     private String description;
 
 }

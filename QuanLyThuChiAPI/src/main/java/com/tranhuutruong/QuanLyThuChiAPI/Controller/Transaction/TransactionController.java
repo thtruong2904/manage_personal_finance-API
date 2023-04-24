@@ -24,6 +24,12 @@ public class TransactionController {
     @Autowired
     private TransactionService transactionService;
 
+    @GetMapping(value = "/all")
+    public ApiResponse<Object> getAll(Principal principal)
+    {
+        return transactionService.getAll(principal.getName());
+    }
+
     @GetMapping(value = "/{id}")
     public Mono<TransactionModel> getTransaction(Principal principal, @PathVariable("id") Long idTransaction)
     {

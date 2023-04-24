@@ -44,7 +44,7 @@ public class GoalController {
     }
 
     @PutMapping(value = "/update/{id}")
-    public Mono<ApiResponse<Object>> updateGoal(Principal principal, @RequestBody UpdateGoalRequest updateGoalRequest, @PathVariable("id") Long idGoal) throws ParseException {
+    public Mono<ApiResponse<Object>> updateGoal(Principal principal, @RequestBody UpdateGoalRequest updateGoalRequest, @PathVariable("id") Long idGoal) {
         return Mono.just(goalService.updateGoal(principal.getName(), updateGoalRequest, idGoal));
     }
 

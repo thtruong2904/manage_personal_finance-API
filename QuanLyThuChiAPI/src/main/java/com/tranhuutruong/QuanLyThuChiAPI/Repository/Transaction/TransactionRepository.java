@@ -36,4 +36,7 @@ public interface TransactionRepository extends JpaRepository<TransactionModel, L
 
     @Query("SELECT t FROM TransactionModel t WHERE t.userInfoModel.accountModel.username = :username AND t.categoryModel.id = :idCategory AND t.transactiondate BETWEEN :fromDate AND :toDate")
     List<TransactionModel> findAllByUserInfoModel_AccountModel_UsernameAndCategoryModel_IdAndTransactiondateIsBetween(@Param("username") String username, @Param("idCategory") Long idCategory, @Param("fromDate") Date fromDate, @Param("toDate") Date toDate);
+
+    @Query("SELECT t FROM TransactionModel t WHERE t.userInfoModel.accountModel.username = :username")
+    List<TransactionModel> findAllByUsername(@Param("username") String username);
 }

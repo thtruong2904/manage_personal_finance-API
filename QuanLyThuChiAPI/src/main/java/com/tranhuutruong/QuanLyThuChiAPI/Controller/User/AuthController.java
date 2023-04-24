@@ -2,6 +2,7 @@ package com.tranhuutruong.QuanLyThuChiAPI.Controller.User;
 
 import com.tranhuutruong.QuanLyThuChiAPI.Request.User.ForgotPasswordRequest;
 import com.tranhuutruong.QuanLyThuChiAPI.Request.User.LoginRequest;
+import com.tranhuutruong.QuanLyThuChiAPI.Request.User.ResetPasswordRequest;
 import com.tranhuutruong.QuanLyThuChiAPI.Request.User.UserRequest;
 import com.tranhuutruong.QuanLyThuChiAPI.Response.Api.ApiResponse;
 import com.tranhuutruong.QuanLyThuChiAPI.Response.Login.LoginResponse;
@@ -56,4 +57,20 @@ public class AuthController {
         PasswordResponse resp =userService.forgotPass(forgotPasswordRequest);
         return Mono.just(ApiResponse.of(resp));
     }
+
+    @GetMapping(value = "/verify-code/{code}")
+    public Mono<PasswordResponse> verifyCode(@PathVariable("code") String code)
+    {
+        PasswordResponse resp = userService.verifyCode(code);
+        return Mono.just(resp);
+    }
+
+    @Transactional
+    @PostMapping(value = "/reset-password")
+    public Mono<ApiResponse<PasswordResponse>> forgotPassword(@Valid @RequestBody ResetPasswordRequest resetPasswordRequest)
+    {
+        PasswordResponse resp = userService.resetPassword(resetPasswordRequest);
+        return Mono.just(ApiResponse.of(resp));
+    }
+
 }

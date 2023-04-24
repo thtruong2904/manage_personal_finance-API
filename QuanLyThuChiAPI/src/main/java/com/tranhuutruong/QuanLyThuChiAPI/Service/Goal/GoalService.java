@@ -98,7 +98,7 @@ public class GoalService implements GoalInterface {
     }
 
     @Override
-    public ApiResponse<Object> updateGoal(String username, UpdateGoalRequest updateGoalRequest, Long idGoal) throws ParseException {
+    public ApiResponse<Object> updateGoal(String username, UpdateGoalRequest updateGoalRequest, Long idGoal) {
         GoalModel goalModel = goalRepository.findGoalModelByUserInfoModel_AccountModel_UsernameAndId(username, idGoal);
         if(goalModel == null || goalModel.getId() <= 0)
         {
@@ -109,12 +109,17 @@ public class GoalService implements GoalInterface {
             return ApiResponse.builder().message("Số tiền bắt đầu mục tiêu không thể lớn hơn hoặc bằng số tiền mục tiêu!").status(101).build();
         }
 
+        Date currentDate = new Date(System.currentTimeMillis());
+        if(currentDate.after(updateGoalRequest.getDeadline()))
+        {
+            return ApiResponse.builder().message("Ngày mục tiêu phải lớn hơn ngày hiện tại!").status(101).build();
+        }
         goalModel.setName(updateGoalRequest.getName());
         goalModel.setBalance(updateGoalRequest.getBalance());
         goalModel.setAmount(updateGoalRequest.getAmount());
-        goalModel.setDeadline(FormatDate.formatDateMySql(updateGoalRequest.getDeadline()));
+        goalModel.setDeadline(updateGoalRequest.getDeadline());
 
-        goalRepository.save(goalModel);
+        System.out.println(goalModel);
         return ApiResponse.builder().message("Sửa mục tiêu thành công!").status(200).build();
     }
 
