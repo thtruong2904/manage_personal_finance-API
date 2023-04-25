@@ -3,6 +3,8 @@ package com.tranhuutruong.QuanLyThuChiAPI.Request.Transaction;
 import lombok.Builder;
 import lombok.Data;
 
+import java.sql.Date;
+
 @Data
 @Builder
 public class TransactionRequest {
@@ -12,9 +14,7 @@ public class TransactionRequest {
 
     private String location;
 
-    private Long type;
-
-    private String transactiondate;
+    private Date transactiondate;
 
     private String description;
 

@@ -31,5 +31,4 @@ public class QuanLyThuChiApiApplication {
 //				request -> ServerResponse.permanentRedirect(URI.create(request.path() + "/index.html?url=/api-docs")).build()).and(RouterFunctions
 //				.resources("/swagger/**", new ClassPathResource("swagger-ui/")));
 //	}
-
 }

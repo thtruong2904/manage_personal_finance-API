@@ -41,9 +41,12 @@ public interface TransactionInterface {
     public ApiResponse<Object> incomeTransaction(String username);
     public ApiResponse<Object> expenseTransaction(String username);
 
-    public ApiResponse<Object> addTransaction(String username, Long idCard, Long idCategory, TransactionRequest transactionRequest) throws ParseException;
 
-    public ApiResponse<Object> updateTransaction(String username,Long idCategory,Long idTransaction, UpdateTransactionRequest updateTransactionRequest) throws ParseException;
+    public ApiResponse<Object> addTransactionIncome(String username, Long idCategory,Long idCard, TransactionRequest transactionRequest);
+
+    public ApiResponse<Object> addTransactionExpense(String username, Long idCategory,Long idCard, TransactionRequest transactionRequest);
+
+    public ApiResponse<Object> updateTransaction(String username,Long idCategory,Long idTransaction, UpdateTransactionRequest updateTransactionRequest);
 
     public ApiResponse<Object> deleteTransaction(String username, Long idTransaction);
 

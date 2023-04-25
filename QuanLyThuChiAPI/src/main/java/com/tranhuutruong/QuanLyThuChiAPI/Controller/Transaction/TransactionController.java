@@ -47,13 +47,19 @@ public class TransactionController {
     }
 
     @Transactional
-    @PostMapping(value = "/add/{idCategory}/{idCard}")
-    public Mono<ApiResponse<Object>> addTransaction(Principal principal, @PathVariable("idCategory") Long idCategory, @PathVariable("idCard") Long idCard, @RequestBody TransactionRequest transactionRequest) throws ParseException {
-        return Mono.just(transactionService.addTransaction(principal.getName(), idCategory, idCard, transactionRequest));
+    @PostMapping(value = "/add/income/{idCategory}/{idCard}")
+    public Mono<ApiResponse<Object>> addTransactionIncome(Principal principal, @PathVariable("idCategory") Long idCategory, @PathVariable("idCard") Long idCard, @RequestBody TransactionRequest transactionRequest) {
+        return Mono.just(transactionService.addTransactionIncome(principal.getName(), idCategory, idCard, transactionRequest));
+    }
+
+    @Transactional
+    @PostMapping(value = "/add/expense/{idCategory}/{idCard}")
+    public Mono<ApiResponse<Object>> addTransactionExpense(Principal principal, @PathVariable("idCategory") Long idCategory, @PathVariable("idCard") Long idCard, @RequestBody TransactionRequest transactionRequest) {
+        return Mono.just(transactionService.addTransactionExpense(principal.getName(), idCategory, idCard, transactionRequest));
     }
 
     @PutMapping(value = "/update/{idCategory}/{idTransaction}")
-    public Mono<ApiResponse<Object>> updateTransaction(Principal principal, @PathVariable("idCategory") Long idCategory, @PathVariable("idTransaction") Long idTransaction,@RequestBody UpdateTransactionRequest updateTransactionRequest) throws ParseException {
+    public Mono<ApiResponse<Object>> updateTransaction(Principal principal, @PathVariable("idCategory") Long idCategory, @PathVariable("idTransaction") Long idTransaction,@RequestBody UpdateTransactionRequest updateTransactionRequest) {
         return Mono.just(transactionService.updateTransaction(principal.getName(), idCategory, idTransaction, updateTransactionRequest));
     }
 

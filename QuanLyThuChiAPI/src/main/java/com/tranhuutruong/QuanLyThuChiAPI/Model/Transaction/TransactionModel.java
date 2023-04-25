@@ -31,7 +31,6 @@ public class TransactionModel {
     private CategoryModel categoryModel;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JsonIgnore
     @JoinColumn(name = "card_id")
     private CardModel cardModel;
 

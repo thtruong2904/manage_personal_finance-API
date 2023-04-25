@@ -70,8 +70,57 @@ public class TransactionService implements TransactionInterface {
         List<TransactionModel> list = transactionRepository.findAllByUsername(username);
         return ApiResponse.builder().message("Danh sách giao dịch").status(200).data(list).build();
     }
+
+
+//    @Override
+//    public ApiResponse<Object> addTransaction(String username, Long idCategory,Long idCard, TransactionRequest transactionRequest) throws ParseException {
+//        AccountModel accountModel = accountRepository.findAccountModelByUsername(username);
+//        if(accountModel == null || accountModel.getId() <= 0)
+//            return ApiResponse.builder().message("Account không tồn tại!").status(101).build();
+//        Optional<UserInfoModel> userInfoModel = Optional.ofNullable(userInfoRepository.findUserInfoModelByAccountModel_Username(username));
+//        if(!userInfoModel.isPresent())
+//            return ApiResponse.builder().message("User không tồn tại!").build();
+//        CategoryModel categoryModel = categoryRepository.findCategoryModelByUserInfoModel_AccountModel_UsernameAndId(username, idCategory);
+//        if(transactionRequest.getType() != categoryModel.getType())
+//        {
+//            return ApiResponse.builder().message("Thể loại của giao dịch và danh mục giao dịch k trùng khớp!").status(101).build();
+//        }
+//        CardModel cardModel = cardRepository.findCardModelByUserInfoModel_AccountModel_UsernameAndId(username, idCard);
+//        if(transactionRequest.getType() == 2)
+//        {
+//            if(transactionRequest.getAmount() > cardModel.getBalance()) {
+//                return ApiResponse.builder().message("Số tiền trong thẻ không đủ để thực hiện giao dịch").status(101).build();
+//            }
+//            else
+//            {
+//                cardModel.setBalance(cardModel.getBalance() - transactionRequest.getAmount());
+//                cardRepository.save(cardModel);
+//            }
+//        }
+//        else
+//        {
+//            cardModel.setBalance(cardModel.getBalance() + transactionRequest.getAmount());
+//            cardRepository.save(cardModel);
+//        }
+//
+//        TransactionModel transactionModel = TransactionModel.builder()
+//                            .userInfoModel(userInfoModel.get())
+//                            .categoryModel(categoryModel)
+//                            .cardModel(cardModel)
+//                            .name(transactionRequest.getName())
+//                            .amount(transactionRequest.getAmount())
+//                .location(transactionRequest.getLocation())
+//                .transactiondate(FormatDate.formatDateMySql(transactionRequest.getTransactiondate()))
+//                .type(transactionRequest.getType())
+//                .description(transactionRequest.getDescription()).build();
+//        transactionRepository.save(transactionModel);
+//        return ApiResponse.builder().message("Tạo giao dịch thành công!").status(200).data(transactionModel).build();
+//    }
+
+    // thêm giao dịch thu nhập
     @Override
-    public ApiResponse<Object> addTransaction(String username, Long idCategory,Long idCard, TransactionRequest transactionRequest) throws ParseException {
+    public ApiResponse<Object> addTransactionIncome(String username, Long idCategory,Long idCard, TransactionRequest transactionRequest)
+    {
         AccountModel accountModel = accountRepository.findAccountModelByUsername(username);
         if(accountModel == null || accountModel.getId() <= 0)
             return ApiResponse.builder().message("Account không tồn tại!").status(101).build();
@@ -79,27 +128,13 @@ public class TransactionService implements TransactionInterface {
         if(!userInfoModel.isPresent())
             return ApiResponse.builder().message("User không tồn tại!").build();
         CategoryModel categoryModel = categoryRepository.findCategoryModelByUserInfoModel_AccountModel_UsernameAndId(username, idCategory);
-        if(transactionRequest.getType() != categoryModel.getType())
+        if(categoryModel.getType() != 1L)
         {
             return ApiResponse.builder().message("Thể loại của giao dịch và danh mục giao dịch k trùng khớp!").status(101).build();
         }
         CardModel cardModel = cardRepository.findCardModelByUserInfoModel_AccountModel_UsernameAndId(username, idCard);
-        if(transactionRequest.getType() == 2)
-        {
-            if(transactionRequest.getAmount() > cardModel.getBalance()) {
-                return ApiResponse.builder().message("Số tiền trong thẻ không đủ để thực hiện giao dịch").status(101).build();
-            }
-            else
-            {
-                cardModel.setBalance(cardModel.getBalance() - transactionRequest.getAmount());
-                cardRepository.save(cardModel);
-            }
-        }
-        else
-        {
-            cardModel.setBalance(cardModel.getBalance() + transactionRequest.getAmount());
-            cardRepository.save(cardModel);
-        }
+        cardModel.setBalance(cardModel.getBalance() + transactionRequest.getAmount());
+        cardRepository.save(cardModel);
 
         TransactionModel transactionModel = TransactionModel.builder()
                             .userInfoModel(userInfoModel.get())
@@ -107,16 +142,56 @@ public class TransactionService implements TransactionInterface {
                             .cardModel(cardModel)
                             .name(transactionRequest.getName())
                             .amount(transactionRequest.getAmount())
-                .location(transactionRequest.getLocation())
-                .transactiondate(FormatDate.formatDateMySql(transactionRequest.getTransactiondate()))
-                .type(transactionRequest.getType())
-                .description(transactionRequest.getDescription()).build();
+                            .location(transactionRequest.getLocation())
+                            .transactiondate(transactionRequest.getTransactiondate())
+                            .type(1L)
+                            .description(transactionRequest.getDescription()).build();
         transactionRepository.save(transactionModel);
-        return ApiResponse.builder().message("Tạo giao dịch thành công!").status(200).build();
+        return ApiResponse.builder().message("Tạo giao dịch thành công!").status(200).data(transactionModel).build();
     }
 
+    // thêm giao dịch chi tiêu
     @Override
-    public ApiResponse<Object> updateTransaction(String username,Long idCategory,Long idTransaction, UpdateTransactionRequest updateTransactionRequest) throws ParseException {
+    public ApiResponse<Object> addTransactionExpense(String username, Long idCategory,Long idCard, TransactionRequest transactionRequest)
+    {
+        AccountModel accountModel = accountRepository.findAccountModelByUsername(username);
+        if(accountModel == null || accountModel.getId() <= 0)
+            return ApiResponse.builder().message("Account không tồn tại!").status(101).build();
+        Optional<UserInfoModel> userInfoModel = Optional.ofNullable(userInfoRepository.findUserInfoModelByAccountModel_Username(username));
+        if(!userInfoModel.isPresent())
+            return ApiResponse.builder().message("User không tồn tại!").build();
+        CategoryModel categoryModel = categoryRepository.findCategoryModelByUserInfoModel_AccountModel_UsernameAndId(username, idCategory);
+        if(categoryModel.getType() != 2L)
+        {
+            return ApiResponse.builder().message("Thể loại của giao dịch và danh mục giao dịch k trùng khớp!").status(101).build();
+        }
+        CardModel cardModel = cardRepository.findCardModelByUserInfoModel_AccountModel_UsernameAndId(username, idCard);
+        if(transactionRequest.getAmount() > cardModel.getBalance()) {
+            return ApiResponse.builder().message("Số tiền trong thẻ không đủ để thực hiện giao dịch").status(101).build();
+        }
+        else
+        {
+            cardModel.setBalance(cardModel.getBalance() - transactionRequest.getAmount());
+            cardRepository.save(cardModel);
+        }
+
+        TransactionModel transactionModel = TransactionModel.builder()
+                .userInfoModel(userInfoModel.get())
+                .categoryModel(categoryModel)
+                .cardModel(cardModel)
+                .name(transactionRequest.getName())
+                .amount(transactionRequest.getAmount())
+                .location(transactionRequest.getLocation())
+                .transactiondate(transactionRequest.getTransactiondate())
+                .type(2L)
+                .description(transactionRequest.getDescription()).build();
+        transactionRepository.save(transactionModel);
+        return ApiResponse.builder().message("Tạo giao dịch thành công!").status(200).data(transactionModel).build();
+    }
+
+
+    @Override
+    public ApiResponse<Object> updateTransaction(String username,Long idCategory,Long idTransaction, UpdateTransactionRequest updateTransactionRequest) {
         TransactionModel transactionModel = transactionRepository.findTransactionModelByUserInfoModel_AccountModel_UsernameAndId(username, idTransaction);
         if(transactionModel == null || transactionModel.getId() <= 0)
         {
@@ -174,7 +249,7 @@ public class TransactionService implements TransactionInterface {
             }
         }
         transactionModel.setLocation(updateTransactionRequest.getLocation());
-        transactionModel.setTransactiondate(FormatDate.formatDateMySql(updateTransactionRequest.getTransactiondate()));
+        transactionModel.setTransactiondate(updateTransactionRequest.getTransactiondate());
         transactionModel.setDescription(updateTransactionRequest.getDescription());
         transactionRepository.save(transactionModel);
         return ApiResponse.builder().message("Sửa giao dịch thành công").status(200).build();
