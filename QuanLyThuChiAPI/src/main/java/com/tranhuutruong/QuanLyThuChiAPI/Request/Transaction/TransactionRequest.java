@@ -17,5 +17,4 @@ public class TransactionRequest {
     private Date transactiondate;
 
     private String description;
-
 }

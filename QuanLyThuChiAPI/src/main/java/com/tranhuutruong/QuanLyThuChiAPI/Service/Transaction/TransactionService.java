@@ -14,12 +14,10 @@ import com.tranhuutruong.QuanLyThuChiAPI.Repository.User.UserInfoRepository;
 import com.tranhuutruong.QuanLyThuChiAPI.Request.Transaction.TransactionRequest;
 import com.tranhuutruong.QuanLyThuChiAPI.Request.Transaction.UpdateTransactionRequest;
 import com.tranhuutruong.QuanLyThuChiAPI.Response.Api.ApiResponse;
-import com.tranhuutruong.QuanLyThuChiAPI.Utils.FormatDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
-import java.text.ParseException;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
@@ -70,52 +68,6 @@ public class TransactionService implements TransactionInterface {
         List<TransactionModel> list = transactionRepository.findAllByUsername(username);
         return ApiResponse.builder().message("Danh sách giao dịch").status(200).data(list).build();
     }
-
-
-//    @Override
-//    public ApiResponse<Object> addTransaction(String username, Long idCategory,Long idCard, TransactionRequest transactionRequest) throws ParseException {
-//        AccountModel accountModel = accountRepository.findAccountModelByUsername(username);
-//        if(accountModel == null || accountModel.getId() <= 0)
-//            return ApiResponse.builder().message("Account không tồn tại!").status(101).build();
-//        Optional<UserInfoModel> userInfoModel = Optional.ofNullable(userInfoRepository.findUserInfoModelByAccountModel_Username(username));
-//        if(!userInfoModel.isPresent())
-//            return ApiResponse.builder().message("User không tồn tại!").build();
-//        CategoryModel categoryModel = categoryRepository.findCategoryModelByUserInfoModel_AccountModel_UsernameAndId(username, idCategory);
-//        if(transactionRequest.getType() != categoryModel.getType())
-//        {
-//            return ApiResponse.builder().message("Thể loại của giao dịch và danh mục giao dịch k trùng khớp!").status(101).build();
-//        }
-//        CardModel cardModel = cardRepository.findCardModelByUserInfoModel_AccountModel_UsernameAndId(username, idCard);
-//        if(transactionRequest.getType() == 2)
-//        {
-//            if(transactionRequest.getAmount() > cardModel.getBalance()) {
-//                return ApiResponse.builder().message("Số tiền trong thẻ không đủ để thực hiện giao dịch").status(101).build();
-//            }
-//            else
-//            {
-//                cardModel.setBalance(cardModel.getBalance() - transactionRequest.getAmount());
-//                cardRepository.save(cardModel);
-//            }
-//        }
-//        else
-//        {
-//            cardModel.setBalance(cardModel.getBalance() + transactionRequest.getAmount());
-//            cardRepository.save(cardModel);
-//        }
-//
-//        TransactionModel transactionModel = TransactionModel.builder()
-//                            .userInfoModel(userInfoModel.get())
-//                            .categoryModel(categoryModel)
-//                            .cardModel(cardModel)
-//                            .name(transactionRequest.getName())
-//                            .amount(transactionRequest.getAmount())
-//                .location(transactionRequest.getLocation())
-//                .transactiondate(FormatDate.formatDateMySql(transactionRequest.getTransactiondate()))
-//                .type(transactionRequest.getType())
-//                .description(transactionRequest.getDescription()).build();
-//        transactionRepository.save(transactionModel);
-//        return ApiResponse.builder().message("Tạo giao dịch thành công!").status(200).data(transactionModel).build();
-//    }
 
     // thêm giao dịch thu nhập
     @Override
@@ -271,13 +223,38 @@ public class TransactionService implements TransactionInterface {
     @Override
     public ApiResponse<Object> getAllTransactionInDayCurrent(String username){
         Date current = new Date(System.currentTimeMillis());
-        System.out.println(current);
         List<TransactionModel> list = transactionRepository.findAllByDateAndUsername(username, current);
         if(list.size() == 0)
         {
             return ApiResponse.builder().message("Không có giao dịch trong ngày").status(101).build();
         }
         return ApiResponse.builder().message("Danh sách giao dịch trong ngày").status(200).data(list).build();
+    }
+
+    // lấy danh sách giao dịch thu nhập trong ngày hiện tại
+    @Override
+    public ApiResponse<Object> getAllIncomeInDayCurrent(String username)
+    {
+        Date current = new Date(System.currentTimeMillis());
+        List<TransactionModel> list = transactionRepository.findAllByUsernameAndDateAndType(username, current, 1L);
+        if(list.size() == 0)
+        {
+            return ApiResponse.builder().message("Chưa có giao dịch thu nhâp trong ngày").status(101).build();
+        }
+        return ApiResponse.builder().message("Danh sách giao dịch thu nhập trong ngày").status(200).data(list).build();
+    }
+
+    // lấy danh sách giao dịch chi tiêu trong ngày hiện tại
+    @Override
+    public ApiResponse<Object> getAllExpenseInDayCurrent(String username)
+    {
+        Date current = new Date(System.currentTimeMillis());
+        List<TransactionModel> list = transactionRepository.findAllByUsernameAndDateAndType(username, current, 2L);
+        if(list.size() == 0)
+        {
+            return ApiResponse.builder().message("Chưa có giao dịch chi tiêu trong ngày").status(101).build();
+        }
+        return ApiResponse.builder().message("Danh sách giao dịch chi tiêu trong ngày").status(200).data(list).build();
     }
 
     // lấy tổng tiên thu về trong hôm nay
@@ -378,6 +355,7 @@ public class TransactionService implements TransactionInterface {
         cal.set(Calendar.DATE, cal.getActualMaximum(Calendar.DATE));
         Date toDate = new Date(cal.getTimeInMillis());
 
+
         List<TransactionModel> list = transactionRepository.findAllByUserInfoModel_AccountModel_UsernameAndTransactiondateBetween(username, fromDate, toDate);
         if(list.size() == 0)
         {
@@ -422,7 +400,6 @@ public class TransactionService implements TransactionInterface {
         return ApiResponse.builder().message("Tổng tiền chi tiêu trong tháng").status(200).data(totalIncomeByMonth).build();
     }
 
-
     // lấy ra tổng tiền thu nhập của tháng trước
     @Override
     public ApiResponse<Object> getTotalIncomeInPreviousMonth(String username)
@@ -465,17 +442,6 @@ public class TransactionService implements TransactionInterface {
         return ApiResponse.builder().message("Tổng tiền chi tiêu trong tháng trước").status(200).data(total).build();
     }
 
-    // ============================
-    // lấy danh sách các giao dịch trong 1 ngày bất kì mà người dùng chọn
-    @Override
-    public ApiResponse<Object> getAllTransactionInDay(String username, Date date){
-        List<TransactionModel> allInDay = transactionRepository.findAllByDateAndUsername(username, date);
-        if(allInDay.size() == 0)
-        {
-            return ApiResponse.builder().message("Không có giao dịch trong ngày").status(101).build();
-        }
-        return ApiResponse.builder().message("Danh sách các giao dịch trong ngày").status(200).data(allInDay).build();
-    }
     // lấy chi tiết 1 giao dịch
     @Override
     public TransactionModel getTransaction(String username, Long idTransaction)
@@ -483,74 +449,46 @@ public class TransactionService implements TransactionInterface {
         return transactionRepository.findTransactionModelByUserInfoModel_AccountModel_UsernameAndId(username, idTransaction);
     }
 
-    // lấy tổng tiền chi tiêu trong ngày
-    @Override
-    public ApiResponse<Object> getTransactionExpenseByDate(String username, Date date) {
-        Long total =  transactionRepository.getTotalExpenseByDateAndUsername(username, date);
-        if(total == null)
-        {
-            return ApiResponse.builder().message("Chưa có giao dịch chi tiêu trong ngày!").status(101).build();
-        }
-        return ApiResponse.builder().message("Tổng tiền chi trong ngày").status(200).data(total).build();
-    }
-
-    // lấy tổng tiền thu về trong ngày
-    @Override
-    public ApiResponse<Object> getTransactionIncomeByDate(String username, Date date){
-        Long totalincomebydate = transactionRepository.getTotalIncomeByDateAndUsername(username, date);
-
-        if(totalincomebydate == null)
-        {
-            return ApiResponse.builder().message("Chưa có giao dịch thu về trong ngày!").status(101).build();
-        }
-        return ApiResponse.builder().message("Tổng tiền thu trong ngày").status(200).data(totalincomebydate).build();
-    }
-
     // lấy danh sách giao dịch theo danh mục
     @Override
-    public List<TransactionModel> getAllByCategory(String username, Long categoryId)
+    public ApiResponse<Object> getAllByCategory(String username, Long categoryId, Date fromDate, Date toDate)
     {
-        return transactionRepository.findAllByCategoryModel_Id(username,categoryId);
+        if(fromDate.compareTo(toDate) > 0)
+        {
+            return ApiResponse.builder().message("Ngày bắt đầu phải nhỏ hơn ngày kết thúc").status(100).build();
+        }
+        List<TransactionModel> list = transactionRepository.findAllByCategoryModel_Id(username,categoryId, fromDate, toDate);
+        if(list.size() == 0)
+        {
+            return ApiResponse.builder().message("Chưa có giao dịch theo danh mục").status(101).build();
+        }
+        return ApiResponse.builder().message("Danh sách giao dịch theo danh mục").status(200).data(list).build();
     }
 
-
-    // lấy danh sách các giao dịch theo khoảng thời gian
+    // lấy tổng tiền của các giao dịch theo danh mục trong khoảng thời gian
     @Override
-    public ApiResponse<Object> getTransactionFromTo(String username, Date from, Date to)
+    public ApiResponse<Object> getTotalByCategory(String username, Long idCategory, Date fromDate, Date toDate)
     {
-        if(from.compareTo(to) > 0)
-        {
-            return ApiResponse.builder().message("Ngày bắt đầu phải nhỏ hơn ngày kết thúc").status(101).build();
-        }
-        List<TransactionModel> transactionModels = transactionRepository.findAllByUserInfoModel_AccountModel_UsernameAndTransactiondateBetween(username, from, to);
-        if(transactionModels.size() == 0)
-        {
-            return ApiResponse.builder().message("Chưa có giao dịch trong khoảng thời gian này!").status(101).build();
-        }
-        return ApiResponse.builder().message("Danh sách các giao dịch").status(200).data(transactionModels).build();
+        Long total = transactionRepository.getTotalByCategory(username, idCategory, fromDate, toDate);
+        if(total == null)
+            return ApiResponse.builder().message("Chưa có giao dịch của danh mục").status(101).build();
+
+        return ApiResponse.builder().message("Tổng tiền giao dịch theo danh mục").status(200).data(total).build();
     }
 
-    // lấy danh sách giao dịch trong 1 tháng mà người dùng chọn dựa vào danh mục
     @Override
-    public ApiResponse<Object> getTransactionInMonthByCategory(String username, Long idCategory,int year, int month)
+    public ApiResponse<Object> getTotalByCategoryInMonth(String username, Long idCategory)
     {
         Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.YEAR, year);
-        cal.set(Calendar.MONTH, month - 1);
         cal.set(Calendar.DATE, 1);
         Date fromDate = new Date(cal.getTimeInMillis());
         cal.set(Calendar.DATE, cal.getActualMaximum(Calendar.DATE));
         Date toDate = new Date(cal.getTimeInMillis());
-
-        List<TransactionModel> transactionModels = transactionRepository.findAllByUserInfoModel_AccountModel_UsernameAndCategoryModel_IdAndTransactiondateIsBetween(username, idCategory, fromDate, toDate);
-        if(transactionModels.size() == 0)
-        {
-            return ApiResponse.builder().message("Không có giao dịch loại danh mục chi tiêu bạn yêu cầu trong tháng!").status(101).build();
-        }
-        return ApiResponse.builder().message("Danh sách các giao dịch theo danh mục trong tháng").status(200).data(transactionModels).build();
+        Long total = transactionRepository.getTotalByCategory(username, idCategory, fromDate, toDate);
+        if(total == null)
+            return ApiResponse.builder().message("Chưa có giao dịch của danh mục").status(101).build();
+        return ApiResponse.builder().message("Tổng tiền giao dịch theo danh mục").status(200).data(total).build();
     }
-
-
 
     // lấy tổng tiền thu về của các giao dịch trong 1 tháng của 1 năm nào đó do người dùng chọn
     @Override
@@ -591,5 +529,145 @@ public class TransactionService implements TransactionInterface {
         }
         return ApiResponse.builder().message("Tổng tiền chi tiêu trong tháng").status(200).data(totalExpense).build();
     }
+
+    // ========================================
+    // lấy danh sách các giao dịch theo khoảng thời gian
+    @Override
+    public ApiResponse<Object> getTransactionFromTo(String username, Date from, Date to)
+    {
+        if(from.compareTo(to) > 0)
+        {
+            return ApiResponse.builder().message("Ngày bắt đầu phải nhỏ hơn ngày kết thúc").status(100).build();
+        }
+        List<TransactionModel> transactionModels = transactionRepository.findAllByUserInfoModel_AccountModel_UsernameAndTransactiondateBetween(username, from, to);
+        if(transactionModels.size() == 0)
+        {
+            return ApiResponse.builder().message("Chưa có giao dịch trong khoảng thời gian này!").status(101).build();
+        }
+        return ApiResponse.builder().message("Danh sách các giao dịch").status(200).data(transactionModels).build();
+    }
+
+    // tổng tiền thu nhập của tất cả giao dịch trong khoảng thời gian
+    @Override
+    public ApiResponse<Object> getTotalIncomeInTime(String username, Date from, Date to)
+    {
+        Long total = transactionRepository.getTotalIncomeByMonthAndUsername(username, from, to);
+        if(total == null)
+        {
+            return ApiResponse.builder().message("Không có giao dịch trong khoảng thời gian").status(101).build();
+        }
+        return ApiResponse.builder().message("Tổng thu nhập trong khoảng thời gian").status(200).data(total).build();
+    }
+
+    @Override
+    public ApiResponse<Object> getTotalExpenseInTime(String username, Date from, Date to)
+    {
+        Long total = transactionRepository.getTotalExpenseByMonthAndUsername(username, from, to);
+        if(total == null)
+        {
+            return ApiResponse.builder().message("Không có giao dịch trong khoảng thời gian").status(101).build();
+        }
+        return ApiResponse.builder().message("Tổng chi tiêu trong khoảng thời gian").status(200).data(total).build();
+    }
+
+    //============================
+    // tổng tiền thu nhập và chi tiêu theo thẻ ngân hàng trong tháng hiện tại
+    @Override
+    public ApiResponse<Object> getTotalIncomeByCardInMonth(String username, Long idCard)
+    {
+        CardModel cardModel = cardRepository.findCardModelByUserInfoModel_AccountModel_UsernameAndId(username, idCard);
+        if(cardModel == null || cardModel.getId() <= 0)
+        {
+            return ApiResponse.builder().message("Không tìm thấy thẻ").status(101).build();
+        }
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.DATE, 1);
+        Date fromDate = new Date(cal.getTimeInMillis());
+        cal.set(Calendar.DATE, cal.getActualMaximum(Calendar.DATE));
+        Date toDate = new Date(cal.getTimeInMillis());
+        Long totalIncome = transactionRepository.totalByCard(username, idCard, 1L, fromDate, toDate);
+        if(totalIncome == null)
+        {
+            return ApiResponse.builder().message("Thẻ chưa có giao dịch thu nhập").status(101).build();
+        }
+
+        return ApiResponse.builder().message("Tổng tiền thu nhập của thẻ").status(200).data(totalIncome).build();
+    }
+
+    @Override
+    public ApiResponse<Object> getTotalExpenseByCardInMonth(String username, Long idCard)
+    {
+        CardModel cardModel = cardRepository.findCardModelByUserInfoModel_AccountModel_UsernameAndId(username, idCard);
+        if(cardModel == null || cardModel.getId() <= 0)
+        {
+            return ApiResponse.builder().message("Không tìm thấy thẻ").status(101).build();
+        }
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.DATE, 1);
+        Date fromDate = new Date(cal.getTimeInMillis());
+        cal.set(Calendar.DATE, cal.getActualMaximum(Calendar.DATE));
+        Date toDate = new Date(cal.getTimeInMillis());
+        Long totalExpense = transactionRepository.totalByCard(username, idCard, 2L, fromDate, toDate);
+        if(totalExpense == null)
+        {
+            return ApiResponse.builder().message("Thẻ chưa có giao dịch chi tiêu").status(101).build();
+        }
+
+        return ApiResponse.builder().message("Tổng tiền chi tiêu của thẻ").status(200).data(totalExpense).build();
+    }
+
+    // tổng tiền thu nhập và chi tiêu theo thẻ ngân hàng trong khoảng thời gian
+    @Override
+    public ApiResponse<Object> getTotalIncomeByCard(String username, Long idCard, Date fromDate, Date toDate)
+    {
+        CardModel cardModel = cardRepository.findCardModelByUserInfoModel_AccountModel_UsernameAndId(username, idCard);
+        if(cardModel == null || cardModel.getId() <= 0)
+        {
+            return ApiResponse.builder().message("Không tìm thấy thẻ").status(101).build();
+        }
+
+        Long totalIncome = transactionRepository.totalByCard(username, idCard, 1L, fromDate, toDate);
+        if(totalIncome == null)
+        {
+            return ApiResponse.builder().message("Thẻ chưa có giao dịch thu nhập").status(101).build();
+        }
+
+        return ApiResponse.builder().message("Tổng tiền thu nhập của thẻ").status(200).data(totalIncome).build();
+    }
+
+    @Override
+    public ApiResponse<Object> getTotalExpenseByCard(String username, Long idCard, Date fromDate, Date toDate)
+    {
+        CardModel cardModel = cardRepository.findCardModelByUserInfoModel_AccountModel_UsernameAndId(username, idCard);
+        if(cardModel == null || cardModel.getId() <= 0)
+        {
+            return ApiResponse.builder().message("Không tìm thấy thẻ").status(101).build();
+        }
+
+        Long totalExpense = transactionRepository.totalByCard(username, idCard, 2L, fromDate, toDate);
+        if(totalExpense == null)
+        {
+            return ApiResponse.builder().message("Thẻ chưa có giao dịch chi tiêu").status(101).build();
+        }
+
+        return ApiResponse.builder().message("Tổng tiền chi tiêu của thẻ").status(200).data(totalExpense).build();
+    }
+
+    // lấy tất cả giao dịch theo id thẻ theo thời gian mà người dùng chọn
+    @Override
+    public ApiResponse<Object> getAllByCard(String username, Long idCard, Date fromDate, Date toDate)
+    {
+        if(fromDate.compareTo(toDate) > 0)
+        {
+            return ApiResponse.builder().message("Ngày bắt đầu phải nhỏ hơn ngày kết thúc").status(100).build();
+        }
+        List<TransactionModel> list = transactionRepository.findAllByCard(username, idCard, fromDate, toDate);
+        if(list.size() == 0)
+        {
+            return ApiResponse.builder().message("Không có giao dịch theo thẻ").status(101).build();
+        }
+        return ApiResponse.builder().message("Danh sách giao dịch theo thẻ").status(200).data(list).build();
+    }
+
 
 }

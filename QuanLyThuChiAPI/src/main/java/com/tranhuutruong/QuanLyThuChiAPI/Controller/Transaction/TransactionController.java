@@ -7,6 +7,7 @@ import com.tranhuutruong.QuanLyThuChiAPI.Response.Api.ApiResponse;
 import com.tranhuutruong.QuanLyThuChiAPI.Service.Transaction.TransactionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.parameters.P;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
@@ -40,6 +41,7 @@ public class TransactionController {
     {
         return Mono.just(transactionService.incomeTransaction(principal.getName()));
     }
+
     @GetMapping(value = "/expense")
     public Mono<ApiResponse<Object>> expenseTransaction(Principal principal)
     {
@@ -70,6 +72,18 @@ public class TransactionController {
     }
 
     // theo ngày
+    @GetMapping(value = "/allincomeintoday")
+    public ApiResponse<Object> getAllIncomeToday(Principal principal)
+    {
+        return transactionService.getAllIncomeInDayCurrent(principal.getName());
+    }
+
+    @GetMapping(value = "/allexpensetoday")
+    public ApiResponse<Object> getAllExpenseToday(Principal principal)
+    {
+        return transactionService.getAllExpenseInDayCurrent(principal.getName());
+    }
+
     @GetMapping(value = "/alltransactionintoday")
     public ApiResponse<Object> getAllTransactionToday(Principal principal)
     {
@@ -87,7 +101,6 @@ public class TransactionController {
     {
         return transactionService.getTotalExpenseToday(principal.getName());
     }
-
 
     // theo tuần
     @GetMapping(value = "/allofweek")
@@ -139,35 +152,41 @@ public class TransactionController {
         return transactionService.getTotalExpenseInPreviousMonth(principal.getName());
     }
 
-    // ====================
-    @GetMapping(value = "/totalexpensebydate/{date}")
-    public ApiResponse<Object> totalexpensebydate(Principal principal, @PathVariable("date") Date date){
-        return transactionService.getTransactionExpenseByDate(principal.getName(), date);
-    }
-
-    @GetMapping(value = "/totalincomebydate/{date}")
-    public ApiResponse<Object> totalincomdebydate(Principal principal, @PathVariable("date") Date date) {
-        return transactionService.getTransactionIncomeByDate(principal.getName(), date);
-    }
-
-    @GetMapping(value = "/category/{idCategory}")
-    public Mono<List<TransactionModel>> getAllByCategory(Principal principal, @PathVariable("idCategory") Long idCategory)
+    // lấy tổng tiền giao dịch theo danh mục trong khoảng thời gian
+    @GetMapping(value = "/totalbycategory/{idCategory}/{date1}/{date2}")
+    public ApiResponse<Object> totalByCategoryInMonth(Principal principal, @PathVariable("idCategory") Long id, @PathVariable("date1") Date fromDate, @PathVariable("date2") Date toDate)
     {
-        return Mono.just(transactionService.getAllByCategory(principal.getName(), idCategory));
+        return transactionService.getTotalByCategory(principal.getName(), id, fromDate, toDate);
     }
 
-    @GetMapping(value = "/form/{date1}/to/{date2}")
+    // lấy tổng tiền giao dịch theo danh mục trong tháng hiện tại để kiểm tra ngân sách
+    @GetMapping(value = "/totalbycategory/{idCategory}")
+    public ApiResponse<Object> totalByCategoryInMonth(Principal principal, @PathVariable("idCategory") Long id)
+    {
+        return transactionService.getTotalByCategoryInMonth(principal.getName(), id);
+    }
+
+    // lấy giao dịch theo 1 khoảng thời gian
+    @GetMapping(value = "/from/{date1}/to/{date2}")
     public ApiResponse<Object> getTransactionFromTo(Principal principal, @PathVariable("date1") Date date1, @PathVariable("date2") Date date2)
     {
         return transactionService.getTransactionFromTo(principal.getName(), date1, date2);
     }
-    @GetMapping(value = "/bymonth/{idCategory}/{year}/{month}")
-    public ApiResponse<Object> getTransactionByMonth(Principal principal, @PathVariable("idCategory") Long idCategory,@PathVariable("year") int year, @PathVariable("month") int month)
+
+    // lấy tổng tiền chi tiêu và thu nhập theo 1 khoảng thời gian
+    @GetMapping(value = "/totalincome/from/{date1}/to/{date2}")
+    public ApiResponse<Object> getTotalIncomeInTime(Principal principal, @PathVariable("date1") Date fromDate, @PathVariable("date2") Date toDate)
     {
-        return transactionService.getTransactionInMonthByCategory(principal.getName(), idCategory, year, month);
+        return transactionService.getTotalIncomeInTime(principal.getName(), fromDate, toDate);
     }
 
+    @GetMapping(value = "/totalexpense/from/{date1}/to/{date2}")
+    public ApiResponse<Object> getTotalExpenseInTime(Principal principal, @PathVariable("date1") Date fromDate, @PathVariable("date2") Date toDate)
+    {
+        return transactionService.getTotalExpenseInTime(principal.getName(), fromDate, toDate);
+    }
 
+    // tổng thu nhập và chi tiêu theo từng tháng
     @GetMapping(value = "/totalincomebymonth/{year}/{month}")
     public ApiResponse<Object> getTotalIncomeByMonth(Principal principal, @PathVariable("year") int year, @PathVariable("month") int month)
     {
@@ -180,10 +199,43 @@ public class TransactionController {
         return transactionService.getTotalExpenseByMonth(principal.getName(), year, month);
     }
 
-    @GetMapping(value = "/allinday/{date}")
-    public ApiResponse<Object> getAllTransactionInDay(Principal principal, @PathVariable("date") Date date)
+    // lấy tất cả giao dịch theo danh mục chi tiêu
+    @GetMapping(value = "/category/{idCategory}/{fromDate}/{toDate}")
+    public ApiResponse<Object> getAllByCategory(Principal principal, @PathVariable("idCategory") Long idCategory, @PathVariable("fromDate") Date fromDate, @PathVariable("toDate") Date toDate)
     {
-        return transactionService.getAllTransactionInDay(principal.getName(), date);
+        return transactionService.getAllByCategory(principal.getName(), idCategory, fromDate, toDate);
     }
 
+    // lấy danh sách giao dịch theo thẻ ngân hàng
+    @GetMapping(value = "/all/card/{id}/{fromDate}/{toDate}")
+    public ApiResponse<Object> getAllIncomeByCard(Principal principal, @PathVariable("id") Long id, @PathVariable("fromDate") Date fromDate, @PathVariable("toDate") Date toDate)
+    {
+        return transactionService.getAllByCard(principal.getName(), id, fromDate, toDate);
+    }
+
+    // tổng thu nhập và chi tiêu của thẻ trong tháng
+    @GetMapping(value = "/totalincome/card/{idCard}")
+    public ApiResponse<Object> getTotalIncomeByCardInMonth(Principal principal, @PathVariable("idCard") Long idCard)
+    {
+        return transactionService.getTotalIncomeByCardInMonth(principal.getName(), idCard);
+    }
+
+    @GetMapping(value = "/totalexpense/card/{idCard}")
+    public ApiResponse<Object> getTotalExpenseByCardInMonth(Principal principal, @PathVariable("idCard") Long idCard)
+    {
+        return transactionService.getTotalExpenseByCardInMonth(principal.getName(), idCard);
+    }
+
+    // tổng thu nhập và chi tiêu theo thẻ trong khoảng thời gian
+    @GetMapping(value = "/totalincome/card/{id}/from/{date1}/to/{date2}")
+    public ApiResponse<Object> getTotalIncomeByCard(Principal principal, @PathVariable("id") Long idCard, @PathVariable("date1") Date fromDate, @PathVariable("date2") Date toDate)
+    {
+        return transactionService.getTotalIncomeByCard(principal.getName(), idCard, fromDate, toDate);
+    }
+
+    @GetMapping(value = "/totalexpense/card/{id}/from/{date1}/to/{date2}")
+    public ApiResponse<Object> getTotalExpenseByCard(Principal principal, @PathVariable("id") Long idCard, @PathVariable("date1") Date fromDate, @PathVariable("date2") Date toDate)
+    {
+        return transactionService.getTotalExpenseByCard(principal.getName(), idCard, fromDate, toDate);
+    }
 }
