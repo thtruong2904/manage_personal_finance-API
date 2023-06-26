@@ -100,7 +100,7 @@ public class CardService implements CardInterface {
         {
             return ApiResponse.builder().message("Không tìm thấy thẻ!").status(101).build();
         }
-        Long transactionCount = cardRepository.countTransactionsByCardId(idCard);
+        Long transactionCount = cardRepository.countTransactionsByCardId(username, idCard);
         if(transactionCount > 0)
             return ApiResponse.builder().message("Không thẻ xóa thẻ do thẻ do có giao dịch liên quan!").status(101).build();
         cardRepository.delete(cardModel);

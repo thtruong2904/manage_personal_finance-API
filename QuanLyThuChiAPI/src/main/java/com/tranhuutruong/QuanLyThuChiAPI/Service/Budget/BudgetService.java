@@ -114,7 +114,6 @@ public class BudgetService implements BudgetInterface {
                 budgetModel.setDescription(budgetRequest.getDescription());
             }
         }
-
         budgetRepository.save(budgetModel);
         return ApiResponse.builder().message("Sửa ngân sách thành công!").status(200).data(budgetModel).build();
     }

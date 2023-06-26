@@ -45,7 +45,7 @@ public class CategoryController {
     }
 
     @DeleteMapping(value = "delete/{id}")
-    public Mono<ApiResponse<Object>> updateCategory(Principal principal, @PathVariable("id") Long categoryId)
+    public Mono<ApiResponse<Object>> deleteCategory(Principal principal, @PathVariable("id") Long categoryId)
     {
         return Mono.just(categoryService.deleteCategory(principal.getName(), categoryId));
     }

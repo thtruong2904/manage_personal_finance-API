@@ -17,9 +17,9 @@ public interface CardRepository extends JpaRepository<CardModel, Long> {
     @Query("SELECT c FROM CardModel c JOIN c.userInfoModel u JOIN u.accountModel a WHERE a.username = :username AND c.id = :id")
     CardModel findCardModelByUserInfoModel_AccountModel_UsernameAndId(@Param("username") String username, @Param("id") Long id);
 
-    @Query("SELECT COUNT(t) FROM TransactionModel t WHERE t.cardModel.id = :idCard")
-    Long countTransactionsByCardId(@Param("idCard") Long idCard);
+    @Query("SELECT COUNT(t) FROM TransactionModel t WHERE t.userInfoModel.accountModel.username = :username AND t.cardModel.id = :idCard")
+    Long countTransactionsByCardId(@Param("username") String username, @Param("idCard") Long idCard);
 
-    @Query("SELECT t FROM TransactionModel t WHERE t.cardModel.userInfoModel.accountModel.username = :username AND t.cardModel.id = :cardId")
+    @Query("SELECT t FROM TransactionModel t WHERE t.userInfoModel.accountModel.username = :username AND t.cardModel.id = :cardId")
     List<TransactionModel> findAllTractionModelByUserInfoModel_AccountModel_UsernameAndId(@Param("username") String username, @Param("cardId") Long cardId);
 }

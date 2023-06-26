@@ -1,9 +1,5 @@
 package com.tranhuutruong.QuanLyThuChiAPI.Model.Role;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
@@ -19,7 +15,9 @@ public class RoleModel {
     @Column(name = "RoleName")
     private String name;
 
-    public RoleModel() {
+    public RoleModel()
+    {
+
     }
 
     public RoleModel(Long id, String name) {

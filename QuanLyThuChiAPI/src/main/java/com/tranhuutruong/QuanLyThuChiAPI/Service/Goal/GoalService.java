@@ -119,7 +119,7 @@ public class GoalService implements GoalInterface {
         goalModel.setAmount(updateGoalRequest.getAmount());
         goalModel.setDeadline(updateGoalRequest.getDeadline());
 
-        System.out.println(goalModel);
+        goalRepository.save(goalModel);
         return ApiResponse.builder().message("Sửa mục tiêu thành công!").status(200).build();
     }
 

@@ -16,7 +16,7 @@ public interface UserInterface {
 
     public ApiResponse<Object> getAllUser();
 
-    public LoginResponse refreshToken(String refreshToken);
+//    public LoginResponse refreshToken(String refreshToken);
     public PasswordResponse resetPassword(ResetPasswordRequest resetPasswordRequest);
     public PasswordResponse verifyCode(String codeRequest);
     public PasswordResponse forgotPass(ForgotPasswordRequest forgotPasswordRequest);

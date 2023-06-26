@@ -24,5 +24,4 @@ public class UserRequest {
     private String roleName;
 
     private String avatar;
-
 }

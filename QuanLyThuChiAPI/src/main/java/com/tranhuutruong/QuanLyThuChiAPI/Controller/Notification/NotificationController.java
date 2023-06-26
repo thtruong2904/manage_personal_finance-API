@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-
 @Slf4j
 @SecurityRequirement(name = "bearerAuth")
 @RestController
@@ -23,7 +22,7 @@ public class NotificationController {
         return notificationService.getAllNotificationNotRead(principal.getName());
     }
 
-    @PutMapping(value = "/update/{id}")
+    @DeleteMapping(value = "/delete/{id}")
     public ApiResponse<Object> updateIsRead(Principal principal, @PathVariable("id") Long id)
     {
         return notificationService.updateIsRead(principal.getName(), id);

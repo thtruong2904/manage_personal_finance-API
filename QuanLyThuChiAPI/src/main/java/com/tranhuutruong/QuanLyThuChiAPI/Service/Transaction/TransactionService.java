@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
@@ -57,7 +58,7 @@ public class TransactionService implements TransactionInterface {
         List<TransactionModel> list = transactionRepository.findAllByUserInfoModel_AccountModel_UsernameaAndAndType(username, 2L);
         if(list.size() == 0)
         {
-            return ApiResponse.builder().message("Không có giao dịch chi tiêu").status(100).build();
+            return ApiResponse.builder().message("Không có giao dịch chi tiêu").status(101).build();
         }
         return ApiResponse.builder().message("Danh sách giao dịch chi tiêu").status(200).data(list).build();
     }
@@ -119,7 +120,7 @@ public class TransactionService implements TransactionInterface {
         }
         CardModel cardModel = cardRepository.findCardModelByUserInfoModel_AccountModel_UsernameAndId(username, idCard);
         if(transactionRequest.getAmount() > cardModel.getBalance()) {
-            return ApiResponse.builder().message("Số tiền trong thẻ không đủ để thực hiện giao dịch").status(101).build();
+            return ApiResponse.builder().message("Số tiền trong thẻ không đủ để thực hiện giao dịch").status(100).build();
         }
         else
         {
@@ -167,7 +168,7 @@ public class TransactionService implements TransactionInterface {
             {
                 if((updateTransactionRequest.getAmount() - transactionModel.getAmount()) > transactionModel.getCardModel().getBalance())
                 {
-                    return ApiResponse.builder().message("Số tiền còn lại trong thẻ không đủ để chi trả cho giao dịch").status(101).build();
+                    return ApiResponse.builder().message("Số tiền còn lại trong thẻ không đủ để chi trả cho giao dịch").status(100).build();
                 }
                 else{
                     cardModel.setBalance(cardModel.getBalance() - (updateTransactionRequest.getAmount() - transactionModel.getAmount()));
@@ -490,6 +491,67 @@ public class TransactionService implements TransactionInterface {
         return ApiResponse.builder().message("Tổng tiền giao dịch theo danh mục").status(200).data(total).build();
     }
 
+    // lấy list total theo danh mục thu nhập trong tháng hiện tại
+    public ApiResponse<Object> getTotalByListCategoryIncomeInMonth(String username)
+    {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.DATE, 1);
+        Date fromDate = new Date(cal.getTimeInMillis());
+        cal.set(Calendar.DATE, cal.getActualMaximum(Calendar.DATE));
+        Date toDate = new Date(cal.getTimeInMillis());
+        List<Long> totalByCategoryIncomeInMonth = new ArrayList<>();
+        List<Long> idCategoryIncome = new ArrayList<>();
+        List<CategoryModel> categoryModels = categoryRepository.findAllByUserInfoModel_AccountModel_UsernameaAndAndType(username, 1L);
+        for(CategoryModel item : categoryModels)
+        {
+            idCategoryIncome.add(item.getId());
+        }
+        for(Long i : idCategoryIncome)
+        {
+            Long total = transactionRepository.getTotalByCategory(username, i, fromDate, toDate);
+            if(total == null)
+            {
+                totalByCategoryIncomeInMonth.add(0L);
+            }
+            else {
+                totalByCategoryIncomeInMonth.add(total);
+            }
+        }
+        return ApiResponse.builder().message("Tổng tiền theo danh mục giao dịch thu nhập").status(200).data(totalByCategoryIncomeInMonth).build();
+    }
+
+    // lấy list total theo danh mục chi tiêu trong tháng hiện tại
+    public ApiResponse<Object> getTotalByListCategoryExpenseInMonth(String username)
+    {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.DATE, 1);
+        Date fromDate = new Date(cal.getTimeInMillis());
+        cal.set(Calendar.DATE, cal.getActualMaximum(Calendar.DATE));
+        Date toDate = new Date(cal.getTimeInMillis());
+        List<Long> totalByCategoryExpenseInMonth = new ArrayList<>();
+        List<Long> idCategoryExpense = new ArrayList<>();
+        List<CategoryModel> categoryModels = categoryRepository.findAllByUserInfoModel_AccountModel_UsernameaAndAndType(username, 2L);
+        for(CategoryModel item : categoryModels)
+        {
+            idCategoryExpense.add(item.getId());
+        }
+        for(Long i : idCategoryExpense)
+        {
+            Long total = transactionRepository.getTotalByCategory(username, i, fromDate, toDate);
+            if(total == null)
+            {
+                totalByCategoryExpenseInMonth.add(0L);
+            }
+            else {
+                totalByCategoryExpenseInMonth.add(total);
+            }
+        }
+        return ApiResponse.builder().message("Tổng tiền theo danh mục giao dịch chi tiêu").status(200).data(totalByCategoryExpenseInMonth).build();
+    }
+
+    // ============== lấy danh sách thu nhập và chi tiêu của từng thẻ
+
+
     // lấy tổng tiền thu về của các giao dịch trong 1 tháng của 1 năm nào đó do người dùng chọn
     @Override
     public ApiResponse<Object> getTotalIncomeByMonth(String username, int year, int month)
@@ -510,6 +572,7 @@ public class TransactionService implements TransactionInterface {
         return ApiResponse.builder().message("Tổng tiền thu về trong tháng").status(200).data(totalIncomeByMonth).build();
     }
 
+
     // lấy tổng tiền chi tiêu của các giao dịch trong 1 tháng của 1 năm nào đó do người dùng chọn
     @Override
     public ApiResponse<Object> getTotalExpenseByMonth(String username, int year, int month)
@@ -529,6 +592,66 @@ public class TransactionService implements TransactionInterface {
         }
         return ApiResponse.builder().message("Tổng tiền chi tiêu trong tháng").status(200).data(totalExpense).build();
     }
+
+    // =============== tổng tiền giao dịch thu nhâ và chi tiêu theo từng tháng
+    private Long getTotalIncomeWithMonth(String username, int year, int month)
+    {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.YEAR, year);
+        cal.set(Calendar.MONTH, month - 1);
+        cal.set(Calendar.DATE, 1);
+        Date fromDate = new Date(cal.getTimeInMillis());
+        cal.set(Calendar.DATE, cal.getActualMaximum(Calendar.DATE));
+        Date toDate = new Date(cal.getTimeInMillis());
+
+        Long totalIncome = transactionRepository.getTotalIncomeByMonthAndUsername(username, fromDate, toDate);
+        if(totalIncome == null)
+            return 0L;
+        else
+            return totalIncome;
+    }
+
+    public ApiResponse<Object> getTotalIncomeInYear(String username)
+    {
+        int year = Calendar.getInstance().get(Calendar.YEAR);
+        List<Long> listTotalWithYear = new ArrayList<>();
+        for(int i = 1; i <= 12; i++)
+        {
+            Long total = getTotalIncomeWithMonth(username, year, i);
+            listTotalWithYear.add(total);
+        }
+        return ApiResponse.builder().status(200).message("Danh sách thu nhập qua từng tháng").data(listTotalWithYear).build();
+    }
+
+    private Long getTotalExpenseWithMonth(String username, int year, int month)
+    {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.YEAR, year);
+        cal.set(Calendar.MONTH, month - 1);
+        cal.set(Calendar.DATE, 1);
+        Date fromDate = new Date(cal.getTimeInMillis());
+        cal.set(Calendar.DATE, cal.getActualMaximum(Calendar.DATE));
+        Date toDate = new Date(cal.getTimeInMillis());
+
+        Long totalExpense = transactionRepository.getTotalExpenseByMonthAndUsername(username, fromDate, toDate);
+        if(totalExpense == null)
+            return 0L;
+        else
+            return totalExpense;
+    }
+
+    public ApiResponse<Object> getTotalExpenseInYear(String username)
+    {
+        int year = Calendar.getInstance().get(Calendar.YEAR);
+        List<Long> listTotalWithYear = new ArrayList<>();
+        for(int i = 1; i <= 12; i++)
+        {
+            Long total = getTotalExpenseWithMonth(username, year, i);
+            listTotalWithYear.add(total);
+        }
+        return ApiResponse.builder().status(200).message("Danh sách chi tiêu qua từng tháng").data(listTotalWithYear).build();
+    }
+
 
     // ========================================
     // lấy danh sách các giao dịch theo khoảng thời gian
@@ -615,6 +738,68 @@ public class TransactionService implements TransactionInterface {
 
         return ApiResponse.builder().message("Tổng tiền chi tiêu của thẻ").status(200).data(totalExpense).build();
     }
+
+
+    // lấy ra list thu nhập và chi tiêu của các thẻ
+    public ApiResponse<Object> getListTotalIncomeByCard(String username)
+    {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.DATE, 1);
+        Date fromDate = new Date(cal.getTimeInMillis());
+        cal.set(Calendar.DATE, cal.getActualMaximum(Calendar.DATE));
+        Date toDate = new Date(cal.getTimeInMillis());
+        List<Long> idCard = new ArrayList<>();
+        List<Long> listTotalIncome = new ArrayList<>();
+        Iterable<CardModel> listCard = cardRepository.findAllByUserInfoModel_AccountModel_Username(username);
+
+        for(CardModel item : listCard)
+        {
+            idCard.add(item.getId());
+        }
+        for(Long i : idCard)
+        {
+            Long total = transactionRepository.totalByCard(username, i, 1L,  fromDate, toDate);
+            if(total == null)
+            {
+                listTotalIncome.add(0L);
+            }
+            else {
+                listTotalIncome.add(total);
+            }
+        }
+        return ApiResponse.builder().message("Danh sách thu nhập của các thẻ theo tháng").status(200).data(listTotalIncome).build();
+    }
+
+
+    public ApiResponse<Object> getListTotalExpenseByCard(String username)
+    {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.DATE, 1);
+        Date fromDate = new Date(cal.getTimeInMillis());
+        cal.set(Calendar.DATE, cal.getActualMaximum(Calendar.DATE));
+        Date toDate = new Date(cal.getTimeInMillis());
+        List<Long> idCard = new ArrayList<>();
+        List<Long> listTotalExpense = new ArrayList<>();
+        Iterable<CardModel> listCard = cardRepository.findAllByUserInfoModel_AccountModel_Username(username);
+
+        for(CardModel item : listCard)
+        {
+            idCard.add(item.getId());
+        }
+        for(Long i : idCard)
+        {
+            Long total = transactionRepository.totalByCard(username, i, 2L,  fromDate, toDate);
+            if(total == null)
+            {
+                listTotalExpense.add(0L);
+            }
+            else {
+                listTotalExpense.add(total);
+            }
+        }
+        return ApiResponse.builder().message("Danh sách thu nhập của các thẻ theo tháng").status(200).data(listTotalExpense).build();
+    }
+
 
     // tổng tiền thu nhập và chi tiêu theo thẻ ngân hàng trong khoảng thời gian
     @Override

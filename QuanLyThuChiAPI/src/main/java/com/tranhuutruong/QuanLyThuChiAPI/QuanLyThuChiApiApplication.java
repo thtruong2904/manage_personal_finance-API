@@ -12,7 +12,6 @@ import java.util.TimeZone;
 @EnableScheduling
 @SpringBootApplication
 public class QuanLyThuChiApiApplication {
-
 	public static void main(String[] args) {
 		SpringApplication application = new SpringApplication(QuanLyThuChiApiApplication.class);
 		application.setDefaultProperties(Collections.singletonMap("server.port", "8080"));

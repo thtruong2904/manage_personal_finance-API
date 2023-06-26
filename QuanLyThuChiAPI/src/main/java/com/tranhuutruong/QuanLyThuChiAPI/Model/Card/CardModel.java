@@ -34,7 +34,6 @@ public class CardModel  {
     @Column(name = "cardnumber")
     private String cardnumber;
 
-
     @Column(name = "description")
     private String description;
 

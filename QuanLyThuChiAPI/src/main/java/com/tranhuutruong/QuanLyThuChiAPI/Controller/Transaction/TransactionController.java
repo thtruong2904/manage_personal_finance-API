@@ -238,4 +238,44 @@ public class TransactionController {
     {
         return transactionService.getTotalExpenseByCard(principal.getName(), idCard, fromDate, toDate);
     }
+
+
+    // lấy ra list tổng tiền thu nhập qua các tháng
+    @GetMapping(value = "/totalincomeinyear")
+    public ApiResponse<Object> getTotalIncomeInYear(Principal principal)
+    {
+        return transactionService.getTotalIncomeInYear(principal.getName());
+    }
+
+    @GetMapping(value = "/totalexpenseinyear")
+    public ApiResponse<Object> getTotalExpenseInYear(Principal principal)
+    {
+        return transactionService.getTotalExpenseInYear(principal.getName());
+    }
+
+    // lấy ra list thu nhập và chi tiêu theo danh mục thu nhập và chi tiêu
+    @GetMapping(value = "/totalbycategoryincomeinmonth")
+    public ApiResponse<Object> getTotalByCategoryIncomeInMonth(Principal principal)
+    {
+        return transactionService.getTotalByListCategoryIncomeInMonth(principal.getName());
+    }
+
+    @GetMapping(value = "/totalbycategoryexpenseinmonth")
+    public ApiResponse<Object> getTotalByCategoryExpenseInMonth(Principal principal)
+    {
+        return transactionService.getTotalByListCategoryExpenseInMonth(principal.getName());
+    }
+
+    // lấy ra list tổng thu nhập và chi tiêu theo thẻ ngân hàng
+    @GetMapping(value = "/listtotalincomebycard")
+    public ApiResponse<Object> getListTotalIncomeByCardInMonth(Principal principal)
+    {
+        return transactionService.getListTotalIncomeByCard(principal.getName());
+    }
+
+    @GetMapping(value = "/listtotalexpensebycard")
+    public ApiResponse<Object> getListTotalExpenseByCardInMonth(Principal principal)
+    {
+        return transactionService.getListTotalExpenseByCard(principal.getName());
+    }
 }

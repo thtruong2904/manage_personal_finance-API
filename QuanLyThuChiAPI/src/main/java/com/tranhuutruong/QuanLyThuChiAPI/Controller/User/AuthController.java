@@ -24,11 +24,6 @@ public class AuthController {
     @Autowired
     private UserService userService;
 
-    @Autowired
-    JwtProvider jwtProvider;
-    @Autowired
-    AuthenticationManager authenticationManager;
-
     @PostMapping(value = "/login")
     public Mono<ApiResponse<LoginResponse>> loginUser(@Valid @RequestBody LoginRequest loginRequest)
     {
@@ -43,13 +38,10 @@ public class AuthController {
         return userResponse;
     }
 
-    @GetMapping(value = "/refresh/{refresh-token}")
-    public Mono<ApiResponse<LoginResponse>> refreshToken(@PathVariable("refresh-token") String refreshToken) {
-        return Mono.just(ApiResponse.of(userService.refreshToken(refreshToken)));
-    }
-
-
-
+//    @GetMapping(value = "/refresh/{refresh-token}")
+//    public Mono<ApiResponse<LoginResponse>> refreshToken(@PathVariable("refresh-token") String refreshToken) {
+//        return Mono.just(ApiResponse.of(userService.refreshToken(refreshToken)));
+//    }
     @Transactional
     @PostMapping(value = "/forgot-password")
     public Mono<ApiResponse<PasswordResponse>> forgotPassword(@Valid @RequestBody ForgotPasswordRequest forgotPasswordRequest)

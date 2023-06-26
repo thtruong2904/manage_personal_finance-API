@@ -1,6 +1,5 @@
 package com.tranhuutruong.QuanLyThuChiAPI.Security.config;
 
-import com.google.common.collect.ImmutableList;
 import com.tranhuutruong.QuanLyThuChiAPI.Security.JWT.JwtEntryPoint;
 import com.tranhuutruong.QuanLyThuChiAPI.Security.JWT.JwtTokenFilter;
 import com.tranhuutruong.QuanLyThuChiAPI.Security.JWT.userprincal.UserDetailService;
@@ -20,7 +19,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -44,7 +42,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception
     {
         authenticationManagerBuilder.userDetailsService(userDetailService).passwordEncoder(passwordEncoder());
-
     }
 
     @Bean
@@ -62,7 +59,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception{
         httpSecurity.cors().configurationSource(corsConfigurationSource()).and().csrf().disable()
-                .authorizeRequests().antMatchers("/api/auth/**", "/api/user/profile", "/v2/api-docs", "/swagger-ui.html", "/webjars/**", "/api-docs/**", "/uploads/**", "/api/upload/**").permitAll()
+                .authorizeRequests().antMatchers("/api/auth/**").permitAll()
                 .antMatchers("/api/card/**", "/api/category/**", "/api/transaction/**", "/api/goal/**", "/api/notification/**", "/api/budget/**").hasAuthority("USER")
                 .antMatchers("/api/user/getAll", "/api/user/delete/**", "/api/user/open/**").hasAuthority("ADMIN")
                 .anyRequest().authenticated()

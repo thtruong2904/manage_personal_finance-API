@@ -1,5 +1,6 @@
 package com.tranhuutruong.QuanLyThuChiAPI.Model.Notification;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tranhuutruong.QuanLyThuChiAPI.Model.User.UserInfoModel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,8 +22,8 @@ public class NotificationModel {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     private UserInfoModel userInfoModel;
-
 
     @Column(name = "title")
     private String title;

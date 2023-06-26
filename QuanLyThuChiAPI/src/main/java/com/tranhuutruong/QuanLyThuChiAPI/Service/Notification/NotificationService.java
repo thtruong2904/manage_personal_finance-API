@@ -29,13 +29,12 @@ public class NotificationService implements NotificationInterface {
     @Override
     public ApiResponse<Object> updateIsRead(String username, Long idNotifi)
     {
-        NotificationModel notificationModel = notificationRepository.findNotifiById(idNotifi);
+        NotificationModel notificationModel = notificationRepository.findNotifiById(username, idNotifi);
         if(notificationModel == null)
         {
             return ApiResponse.builder().message("Thông báo không tồn tại").status(101).build();
         }
-        notificationModel.set_read(true);
-        notificationRepository.save(notificationModel);
-        return ApiResponse.builder().message("Cập nhật trạng thái thông báo thành công").status(200).data(notificationModel).build();
+        notificationRepository.delete(notificationModel);
+        return ApiResponse.builder().message("Xóa thông báo thành công!").status(200).build();
     }
 }

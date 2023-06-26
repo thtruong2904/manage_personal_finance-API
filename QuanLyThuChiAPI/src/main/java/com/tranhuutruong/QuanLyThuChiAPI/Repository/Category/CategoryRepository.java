@@ -20,9 +20,9 @@ public interface CategoryRepository extends JpaRepository<CategoryModel, Long> {
     @Query("SELECT c FROM CategoryModel c JOIN c.userInfoModel u JOIN u.accountModel a WHERE a.username = :username AND c.id = :id")
     CategoryModel findCategoryModelByUserInfoModel_AccountModel_UsernameAndId(@Param("username") String username, @Param("id") Long id);
 
-    @Query("SELECT COUNT(t) FROM TransactionModel t WHERE t.categoryModel.id = :categoryId")
-    Long countTransactionsByCategoryId(@Param("categoryId") Long categoryId);
+    @Query("SELECT COUNT(t) FROM TransactionModel t WHERE t.userInfoModel.accountModel.username = :username AND t.categoryModel.id = :categoryId")
+    Long countTransactionsByCategoryId(@Param("username") String username, @Param("categoryId") Long categoryId);
 
-    @Query("SELECT c FROM CategoryModel c WHERE c.name = :name AND c.type = :type")
-    CategoryModel findCategoryModelByNameAndType(@Param("name") String name, @Param("type") Long type);
+    @Query("SELECT c FROM CategoryModel c WHERE c.userInfoModel.accountModel.username = :username AND c.name = :name AND c.type = :type")
+    CategoryModel findCategoryModelByNameAndType(@Param("username") String username, @Param("name") String name, @Param("type") Long type);
 }

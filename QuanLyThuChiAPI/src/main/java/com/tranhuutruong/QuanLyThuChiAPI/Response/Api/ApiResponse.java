@@ -17,8 +17,6 @@ public class ApiResponse<T> {
     private int error = 0;
     @Builder.Default
     private String message = null;
-
-
     private T data;
 
     public ApiResponse(int status) {

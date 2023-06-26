@@ -5,12 +5,10 @@ import com.tranhuutruong.QuanLyThuChiAPI.Interface.User.UserInterface;
 import com.tranhuutruong.QuanLyThuChiAPI.Model.Role.RoleModel;
 import com.tranhuutruong.QuanLyThuChiAPI.Model.User.AccountModel;
 import com.tranhuutruong.QuanLyThuChiAPI.Model.User.ForgotPassword;
-import com.tranhuutruong.QuanLyThuChiAPI.Model.User.TokenModel;
 import com.tranhuutruong.QuanLyThuChiAPI.Model.User.UserInfoModel;
 import com.tranhuutruong.QuanLyThuChiAPI.Repository.Role.RoleRepository;
 import com.tranhuutruong.QuanLyThuChiAPI.Repository.User.AccountRepository;
 import com.tranhuutruong.QuanLyThuChiAPI.Repository.User.ForgotPasswordRepository;
-import com.tranhuutruong.QuanLyThuChiAPI.Repository.User.TokenRepository;
 import com.tranhuutruong.QuanLyThuChiAPI.Repository.User.UserInfoRepository;
 import com.tranhuutruong.QuanLyThuChiAPI.Request.User.*;
 import com.tranhuutruong.QuanLyThuChiAPI.Response.Api.ApiResponse;
@@ -58,8 +56,6 @@ public class UserService implements UserInterface{
     private RoleRepository roleRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
-    @Autowired
-    private TokenRepository tokenRepository;
 
     @Autowired
     private EmailSenderService emailSenderService;
@@ -68,8 +64,6 @@ public class UserService implements UserInterface{
 
     @Autowired
     JwtProvider jwtProvider;
-    @Value("${jwkFile}")
-    private Resource jwkFile;
 
     @Transactional
     @Override
@@ -120,35 +114,13 @@ public class UserService implements UserInterface{
         {
             return buildToken(userInfoRepository.findUserInfoModelByAccountModel(accountModel));
         }else{
-            return LoginResponse.builder().message("Tài khoản mật khẩu không hợp lệ. Vui lòng thử lại ").status(false).build();
+            return LoginResponse.builder().message("Tài khoản mật khẩu không hợp lệ. Vui lòng thử lại").status(false).build();
     }
     }
 
     private LoginResponse buildToken(UserInfoModel userInfoModel)
     {
         return LoginResponse.builder().userInfoModel(userInfoModel).accessToken(jwtProvider.createToken(userInfoModel)).status(true).build();
-    }
-
-    @Override
-    public LoginResponse refreshToken(String refreshToken)
-    {
-        TokenModel tokenModel = tokenRepository.findByToken_id(refreshToken);
-        if(tokenModel == null || tokenModel.getId() <= 0)
-        {
-            return LoginResponse.builder().message("Refresh token không tồn tại!").status(false).build();
-        }
-        else {
-            if(System.currentTimeMillis() > tokenModel.getExpired_time())
-            {
-                return LoginResponse.builder().message("Jwt refresh token expired at "+new DateTime(tokenModel.getExpired_time())).status(false).build();
-            }
-            UserInfoModel userInfoModel = userInfoRepository.findById(tokenModel.getUser_id()).orElseThrow();
-            if (userInfoModel.getAccountModel().isActivity() == false) {
-                return LoginResponse.builder().message("Your account has been temporarily locked, please contact us again").status(false).build();
-            } else{
-                return buildToken(userInfoModel);
-            }
-        }
     }
 
     @Override

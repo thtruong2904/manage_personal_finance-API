@@ -8,7 +8,6 @@ import lombok.Data;
 public class CardRequest {
     private String name;
     private Long balance;
-
     private String cardnumber;
     private String description;
 }

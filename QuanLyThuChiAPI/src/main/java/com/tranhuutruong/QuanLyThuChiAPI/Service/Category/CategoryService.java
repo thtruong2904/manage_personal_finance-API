@@ -42,7 +42,7 @@ public class CategoryService implements CategoryInterface {
         if (!userInfoModel.isPresent()) {
             return ApiResponse.builder().message("User không tồn tại!").status(200).build();
         }
-        CategoryModel category = categoryRepository.findCategoryModelByNameAndType(categoryRequest.getName(), categoryRequest.getType());
+        CategoryModel category = categoryRepository.findCategoryModelByNameAndType(username, categoryRequest.getName(), categoryRequest.getType());
         if(category != null)
         {
             return ApiResponse.builder().message("Đã tồn tại danh mục với thể loại chi tiêu").status(101).build();
@@ -64,6 +64,11 @@ public class CategoryService implements CategoryInterface {
         if(categoryModel == null || categoryModel.getId() <= 0)
         {
             return ApiResponse.builder().status(101).message("Không thể cập nhật danh mục chi tiêu").data(null).build();
+        }
+        CategoryModel category = categoryRepository.findCategoryModelByNameAndType(username, categoryRequest.getName(), categoryRequest.getType());
+        if(category != null)
+        {
+            return ApiResponse.builder().message("Đã tồn tại danh mục với thể loại chi tiêu").status(101).build();
         }
         else {
             if (categoryRequest.getName() != null && !categoryRequest.getName().isEmpty()) {
@@ -92,7 +97,7 @@ public class CategoryService implements CategoryInterface {
         {
             return ApiResponse.builder().message("Không tìm thấy danh mục!").status(101).build();
         }
-        Long transactionCount = categoryRepository.countTransactionsByCategoryId(categoryId);
+        Long transactionCount = categoryRepository.countTransactionsByCategoryId(username, categoryId);
         if(transactionCount > 0)
         {
             return ApiResponse.builder().message("Không thể xóa danh mục vì có giao dịch liên quan!").status(101).build();

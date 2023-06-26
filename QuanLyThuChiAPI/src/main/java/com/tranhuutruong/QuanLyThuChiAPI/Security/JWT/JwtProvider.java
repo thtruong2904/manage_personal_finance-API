@@ -1,13 +1,10 @@
 package com.tranhuutruong.QuanLyThuChiAPI.Security.JWT;
 
 import com.tranhuutruong.QuanLyThuChiAPI.Model.User.UserInfoModel;
-import com.tranhuutruong.QuanLyThuChiAPI.Security.JWT.userprincal.UserPrinciple;
 import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 @Component
@@ -16,14 +13,6 @@ public class JwtProvider {
     private String jwtSecret = "tranhuutruong290401@gmail.com";
 
     private int jwtExpiration = 864000;
-
-    public String createToken(Authentication authentication)
-    {
-        UserPrinciple userPrinciple = (UserPrinciple) authentication.getPrincipal();
-        return Jwts.builder().setSubject(userPrinciple.getUsername()).setIssuedAt(new Date()).setExpiration(new Date(new Date().getTime() + jwtExpiration + 1000))
-                .signWith(SignatureAlgorithm.HS512, jwtSecret)
-                .compact();
-    }
 
     public String createToken(UserInfoModel userInfoModel)
     {

@@ -1,7 +1,6 @@
 package com.tranhuutruong.QuanLyThuChiAPI.Security.JWT.userprincal;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.tranhuutruong.QuanLyThuChiAPI.Model.User.AccountModel;
 import com.tranhuutruong.QuanLyThuChiAPI.Model.User.UserInfoModel;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

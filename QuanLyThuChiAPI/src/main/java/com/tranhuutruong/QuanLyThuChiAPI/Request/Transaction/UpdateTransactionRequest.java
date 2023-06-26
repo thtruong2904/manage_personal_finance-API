@@ -9,11 +9,8 @@ import java.sql.Date;
 @Builder
 public class UpdateTransactionRequest {
     private String name;
-
     private Long amount;
-
     private String location;
-
     private Date transactiondate;
     private String description;
 }
