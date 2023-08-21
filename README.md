@@ -1,5 +1,5 @@
 
-<h1 align="center">Xây dựng RESTFul APIs cho đồ án Quản Thu Chi Cá Nhân sử dụng Framework Java Spring Boot<a href="https://spring.io/learn" name="spring boot" ><img width="48" height="48" src="https://img.icons8.com/color/48/spring-logo.png" alt="spring-logo"/></a></h1>
+<h2 align="center">Xây dựng RESTFul API cho đồ án Quản Thu Chi Cá Nhân sử dụng Java Spring Boot<a href="https://spring.io/learn" name="spring boot" ><img width="48" height="48" src="https://img.icons8.com/color/48/spring-logo.png" alt="spring-logo"/></a></h2>
 
 - Quản lý thu chi cá nhân là một đề tài quan trọng trong lĩnh vực tài chính cá nhân và quản lý cá nhân. Nó liên quan đến việc theo dõi, phân loại và điều chỉnh các khoản thu nhập và chi tiêu của một cá nhân hoặc gia đình. Đề tài này đóng vai trò quan trọng trong việc xây dựng và duy trì một tài chính cá nhân lành mạnh và đảm bảo sự ổn định tài chính.
 - Mục tiêu của quản lý thu chi cá nhân là giúp cá nhân quản lý tiền bạc một cách hiệu quả, đảm bảo sự cân đối giữa thu nhập và chi tiêu, từ đó tạo điều kiện thuận lợi cho việc tiết kiệm, đầu tư và xây dựng tương lai tài chính. Quản lý thu chi cá nhân đòi hỏi sự tổ chức và kỷ luật trong việc theo dõi, phân loại và phân bổ nguồn lực tài chính.
