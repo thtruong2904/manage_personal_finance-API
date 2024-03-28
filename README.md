@@ -6,11 +6,6 @@
 - Công nghệ thông tin đã đóng vai trò quan trọng trong việc phát triển các công cụ và ứng dụng hỗ trợ quản lý thu chi cá nhân. Hiện nay, có nhiều ứng dụng di động và phần mềm máy tính được thiết kế đặc biệt để giúp người dùng quản lý thu chi cá nhân một cách thuận tiện và hiệu quả. Các công cụ này cho phép người dùng nhập liệu, tự động phân loại các khoản thu chi, tạo biểu đồ và báo cáo về tình hình tài chính cá nhân.
 - Quản lý thu chi cá nhân không chỉ giúp người dùng có cái nhìn tổng quan về tài chính của mình mà còn giúp họ nhận ra các mẫu chi tiêu không cần thiết, tìm ra cách để tiết kiệm và đầu tư một cách thông minh. Nó cũng giúp người dùng thiết lập mục tiêu tài chính, quản lý nợ và tạo dựng một kế hoạch tài chính dài hạn.
 - Đó là lý do mình phát triển ứng dụng này để giúp mọi người có thể quản lý tốt tài chính cá nhân của mình.
- 
-
-# [**Table Of Content**](#table-of-content)
-- [**Database**](#database)
-- [**API**](#api)
 
 # [**API**](#api)
 
