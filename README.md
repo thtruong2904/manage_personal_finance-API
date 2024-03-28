@@ -12,11 +12,6 @@
 - [**Database**](#database)
 - [**API**](#api)
 
-# [**Database**](#database)
-***Đồ án sử dụng hệ quản trị cơ sở dữ liệu MySQL***
-
-![image](https://github.com/TranHuuTruong2904/QuanLyThuChiCaNhan_API/assets/83656656/357d90a8-30f8-4413-91b8-32f45a7ac05a)
-
 # [**API**](#api)
 
 ***LOGIN***
